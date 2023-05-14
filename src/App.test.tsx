@@ -55,55 +55,57 @@ describe('Customer Management App Tests', () => {
   it('should render the customer when there is a customer record', async () => {
     insertOneCustomer({ id: 5, firstName: 'Peter', lastName: 'Parker' })
     render(<App />)
-    await screen.findByText('Peter')
-    await screen.findByText('Parker')
-    await screen.findByText('peter.parker@gmx.de')
-    await screen.findByText('0123 4567890')
+    await screen.findAllByText('Peter')
+    await screen.findAllByText('Parker')
+    await screen.findAllByText('peter.parker@gmx.de')
+    await screen.findAllByText('0123 4567890')
   })
 
   it('should display appropriate record when there is a customer record found via search', async () => {
     insertOneCustomer({ id: 7, firstName: 'Stephen', lastName: 'Strange' })
     insertOneCustomer({ id: 9, firstName: 'Bruce', lastName: 'Banner' })
     render(<App />)
-    await screen.findByText('Stephen')
-    await screen.findByText('Strange')
-    await screen.findByText('stephen.strange@gmx.de')
+    await screen.findAllByText('Stephen')
+    await screen.findAllByText('Strange')
+    await screen.findAllByText('stephen.strange@gmx.de')
     const searchBox = screen.getByPlaceholderText('Search...')
     await user.type(searchBox, 'br')
-    expect(screen.queryByText('Stephen')).toBe(null)
-    expect(screen.queryByText('Bruce')).not.toBe(null)
+    expect(screen.queryAllByText('stephen.strange@gmx.de')).toHaveLength(0)
+    expect(screen.queryAllByText('bruce.banner@gmx.de')).not.toHaveLength(0)
   })
 
   it('should edit appropriate record when edit is used in a customer row', async () => {
     insertOneCustomer({ id: 11, firstName: 'Natasha', lastName: 'Romano' })
     render(<App />)
-    await screen.findByText('Natasha')
-    await screen.findByText('Romano')
-    await screen.findByText('natasha.romano@gmx.de')
+    await screen.findAllByText('Natasha')
+    await screen.findAllByText('Romano')
+    await screen.findAllByText('natasha.romano@gmx.de')
     const editButton = screen.getByTestId('edit-11')
     await user.click(editButton)
     const lastNameForEdit = screen.getByTestId('lastName-11')
     await user.type(lastNameForEdit, 'v')
     const save = screen.getByTestId('save-11')
     await user.click(save)
-    expect(await screen.findByText('Changes Saved for ID 11')).not.toBe(null)
-    expect(screen.queryByText('Romano')).toBe(null)
-    expect(screen.queryByText('Romanov')).not.toBe(null)
+    expect(
+      await screen.findAllByText('Changes Saved for ID 11'),
+    ).not.toHaveLength(0)
+    expect(screen.queryAllByText('Romano')).toHaveLength(0)
+    expect(screen.queryAllByText('Romanov')).not.toHaveLength(0)
   })
 
   it('should delete appropriate record when delete is used in a customer row', async () => {
     insertOneCustomer({ id: 3, firstName: 'Steve', lastName: 'Rogers' })
     insertOneCustomer({ id: 1, firstName: 'Tony', lastName: 'Stark' })
     render(<App />)
-    await screen.findByText('Steve')
-    await screen.findByText('Rogers')
+    await screen.findAllByText('Steve')
+    await screen.findAllByText('Rogers')
     const deleteButton = screen.getByTestId('delete-3')
     await user.click(deleteButton)
     expect(
-      await screen.findByText('Customer Record for ID 3 Deleted'),
+      await screen.findAllByText('Customer Record for ID 3 Deleted'),
     ).not.toBe(null)
-    expect(screen.queryByText('Steve')).toBe(null)
-    expect(screen.queryByText('Tony')).not.toBe(null)
+    expect(screen.queryAllByText('steve.rogers@gmx.de')).toHaveLength(0)
+    expect(screen.queryAllByText('tony.stark@gmx.de')).not.toHaveLength(0)
   })
 
   it('should display the New Customer form on Tab click', async () => {
