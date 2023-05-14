@@ -45,7 +45,7 @@ Dashboard that shows the current customer list with options to edit, delete and 
 - Add New Customer
 
 ## Configuration
-- Used Prettier for maintaining for
+- Used Prettier for maintaining formatting style of code.
 
 
 ## Setup
